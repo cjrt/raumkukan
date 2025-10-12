@@ -1,14 +1,16 @@
 #include "../headers/Player.h"
 #include "../headers/Bullet.h"
+#include "../headers/Sound.h"
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 #include <cmath>
 #include <iostream>
 
-Player::Player(SDL_Renderer* renderer, const std::string& path, int screenWidth, int screenHeight, float scale)
-    : renderer_(renderer), texture_(nullptr),
+// define the scale[size of sprite] in the main.cpp constructor parameter
+Player::Player(SDL_Renderer* renderer, const std::string& path, int screenWidth, int screenHeight, float scale, Sounds* sounds)
+    : renderer_(renderer), texture_(nullptr), sounds_(sounds),
       x_(screenWidth / 2.0f), y_(screenHeight / 2.0f),
-      speed_(300.0f), scale_(0.175f),
+      speed_(300.0f), scale_(scale),
       screenWidth_(screenWidth), screenHeight_(screenHeight),
       movingUp_(false), movingDown_(false), movingLeft_(false), movingRight_(false)
 {
@@ -78,6 +80,7 @@ void Player::shoot(std::vector<Bullet*>& bullets) {
     SDL_GetMouseState(&mouseX, &mouseY);
 
     bullets.push_back(new Bullet(renderer_, "assets/bullet.png", centerX, centerY, (float)mouseX, (float)mouseY));
+    if (sounds_) sounds_->playGunSound();
 }
 
 void Player::render() {

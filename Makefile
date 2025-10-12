@@ -1,10 +1,10 @@
 CXX = g++
 CXXFLAGS = -Wall -std=c++17 `sdl2-config --cflags`
-LDFLAGS = `sdl2-config --libs` -lSDL2_image
+LDFLAGS = `sdl2-config --libs` -lSDL2_image -lSDL2_mixer
 
 TARGET = raumkūkan
 BIN = bin
-SRCS = src/main.cpp src/AnimatedBackground.cpp src/Player.cpp src/Asteroid.cpp src/Bullet.cpp
+SRCS = src/main.cpp src/AnimatedBackground.cpp src/Player.cpp src/Asteroid.cpp src/Bullet.cpp src/Sound.cpp
 OBJS = $(SRCS:.cpp=.o)
 OUT = $(BIN)/$(TARGET)
 

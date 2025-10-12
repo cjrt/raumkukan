@@ -8,6 +8,7 @@
 #include "../headers/Player.h"
 #include "../headers/Asteroid.h"
 #include "../headers/Bullet.h"
+#include "../headers/Sound.h"
 
 const int SCREEN_WIDTH = 1920;
 const int SCREEN_HEIGHT = 1080;
@@ -18,6 +19,20 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    Sounds sounds;
+    if (!sounds.init()) {
+        std::cerr << "Failed to initialize SDL_mixer!" << std::endl;
+        return 1;
+    }
+
+    if (!sounds.loadMusic("assets/backgroundmusic.mp3"))
+        return 1;
+
+    if (!sounds.loadGunSound("assets/gunsound.mp3"))
+        return 1;
+
+    sounds.playMusic(); // start background music
+
     SDL_Window* window = SDL_CreateWindow("Raumkūkan",
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED,
@@ -27,7 +42,7 @@ int main(int argc, char* argv[]) {
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     AnimatedBackground bg(renderer, "assets/background", 9, 100);
-    Player player(renderer, "assets/player.png", SCREEN_WIDTH, SCREEN_HEIGHT, 0.25f);
+    Player player(renderer, "assets/player.png", SCREEN_WIDTH, SCREEN_HEIGHT, 0.20f, &sounds);
 
     Uint32 lastTime = SDL_GetTicks();
     bool running = true;
