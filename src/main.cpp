@@ -7,6 +7,7 @@
 #include "../headers/AnimatedBackground.h"
 #include "../headers/Player.h"
 #include "../headers/Asteroid.h"
+#include "../headers/Bullet.h"
 
 const int SCREEN_WIDTH = 1920;
 const int SCREEN_HEIGHT = 1080;
@@ -24,21 +25,20 @@ int main(int argc, char* argv[]) {
                                           SCREEN_HEIGHT,
                                           SDL_WINDOW_SHOWN);
 
-    // general objects constructors, background, player etc
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    AnimatedBackground bg(renderer, "assets/background", 9, 100); // 9 frames, change every 5 loops
+    AnimatedBackground bg(renderer, "assets/background", 9, 100);
     Player player(renderer, "assets/player.png", SCREEN_WIDTH, SCREEN_HEIGHT, 0.25f);
 
-    // keep objects relative to frames, prevents frame dependent movement
     Uint32 lastTime = SDL_GetTicks();
     bool running = true;
     SDL_Event event;
 
-    // spawn seed for asteroids
-    srand(static_cast<unsigned>(time(nullptr)));
+    std::vector<Bullet*> bullets;
     std::vector<Asteroid*> asteroids;
+
+    srand(static_cast<unsigned>(time(nullptr)));
     float spawnTimer = 0.0f;
-    float spawnInterval = 0.75f; // seconds between spawns
+    float spawnInterval = 0.75f;
 
     while (running) {
         Uint32 currentTime = SDL_GetTicks();
@@ -47,6 +47,9 @@ int main(int argc, char* argv[]) {
 
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) running = false;
+            if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                player.shoot(bullets);
+            }
             player.handleEvent(event);
         }
 
@@ -58,10 +61,21 @@ int main(int argc, char* argv[]) {
                                              player.getX(), player.getY()));
         }
 
-        // --- UPDATE ---
         bg.update();
         player.update(deltaTime);
 
+        // update bullets
+        for (auto it = bullets.begin(); it != bullets.end();) {
+            (*it)->update(deltaTime);
+            if ((*it)->isOffScreen()) {
+                delete *it;
+                it = bullets.erase(it);
+            } else {
+                ++it;
+            }
+        }
+
+        // update asteroids
         for (auto it = asteroids.begin(); it != asteroids.end();) {
             (*it)->update(deltaTime, player.getX(), player.getY());
             if ((*it)->isOffScreen()) {
@@ -72,17 +86,21 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // --- RENDER ---
+        // render everything
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
         bg.render();
-        for (auto* a : asteroids)
-            a->render();
+        for (auto* a : asteroids) a->render();
+        for (auto* b : bullets) b->render();
         player.render();
 
         SDL_RenderPresent(renderer);
     }
+
+    // cleanup
+    for (auto* b : bullets) delete b;
+    for (auto* a : asteroids) delete a;
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);

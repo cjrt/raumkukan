@@ -1,4 +1,5 @@
 #include "../headers/Player.h"
+#include "../headers/Bullet.h"
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 #include <cmath>
@@ -66,6 +67,17 @@ float Player::getAngleToMouse() const {
     float dx = mouseX - (x_ + w_ / 2.0f);
     float dy = mouseY - (y_ + h_ / 2.0f);
     return atan2f(dy, dx) * 180.0f / M_PI;
+}
+
+void Player::shoot(std::vector<Bullet*>& bullets) {
+    // spawn at player center
+    float centerX = x_ + w_ / 2.0f;
+    float centerY = y_ + h_ / 2.0f;
+
+    int mouseX, mouseY;
+    SDL_GetMouseState(&mouseX, &mouseY);
+
+    bullets.push_back(new Bullet(renderer_, "assets/bullet.png", centerX, centerY, (float)mouseX, (float)mouseY));
 }
 
 void Player::render() {

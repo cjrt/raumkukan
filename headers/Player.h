@@ -3,6 +3,9 @@
 
 #include <SDL2/SDL.h>
 #include <string>
+#include <vector>
+
+class Bullet;
 
 class Player {
 public:
@@ -16,6 +19,8 @@ public:
 
     float getX() const { return x_; }     // used for pathfinding
     float getY() const { return y_; }
+
+    void shoot(std::vector<Bullet*>& bullets); // fire a bullet, puts a new bullet into the bullets vector
 
 private:
     SDL_Renderer* renderer_;

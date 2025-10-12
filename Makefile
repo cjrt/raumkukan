@@ -4,7 +4,7 @@ LDFLAGS = `sdl2-config --libs` -lSDL2_image
 
 TARGET = raumkūkan
 BIN = bin
-SRCS = src/main.cpp src/AnimatedBackground.cpp src/Player.cpp src/Asteroid.cpp
+SRCS = src/main.cpp src/AnimatedBackground.cpp src/Player.cpp src/Asteroid.cpp src/Bullet.cpp
 OBJS = $(SRCS:.cpp=.o)
 OUT = $(BIN)/$(TARGET)
 
