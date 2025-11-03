@@ -17,6 +17,8 @@ public:
     void render();                        // Draw and rotate toward mouse
     void update(float deltaTime);         // used to prevent frame dependent movement
 
+    SDL_Rect getHitbox() const;
+
     float getX() const { return x_; }     // used for pathfinding
     float getY() const { return y_; }
 

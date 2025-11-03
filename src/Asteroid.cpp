@@ -13,7 +13,7 @@ Asteroid::Asteroid(SDL_Renderer* renderer, const std::string& texturePath,
 
     texture_ = SDL_CreateTextureFromSurface(renderer, surface);
 
-    // randomize size of asteroid, 0.2x and 0.6x
+    // randomize size of asteroid
     float scale = 0.2f + static_cast<float>(rand()) / RAND_MAX * 0.3f;
 
     int w = static_cast<int>(surface->w * scale);
@@ -37,7 +37,7 @@ Asteroid::Asteroid(SDL_Renderer* renderer, const std::string& texturePath,
     }
 
     // give each asteroid a random speed
-    speed_ = 100.0f + rand() % 250; // 100–250 px/sec
+    speed_ = 100.0f + rand() % 400;
 
     // direction toward player
     float dx = playerX - x_;

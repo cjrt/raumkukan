@@ -71,6 +71,16 @@ float Player::getAngleToMouse() const {
     return atan2f(dy, dx) * 180.0f / M_PI;
 }
 
+SDL_Rect Player::getHitbox() const {
+    int padding = 10; // scales size of hitbox optional: shrink hitbox so collisions feel fair
+    return SDL_Rect{
+        static_cast<int>(x_) + padding,
+        static_cast<int>(y_) + padding,
+        w_ - 2 * padding,
+        h_ - 2 * padding
+    };
+}
+
 void Player::shoot(std::vector<Bullet*>& bullets) {
     // spawn at player center
     float centerX = x_ + w_ / 2.0f;

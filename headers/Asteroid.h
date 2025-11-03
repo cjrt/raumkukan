@@ -14,7 +14,7 @@ public:
     void render();
     bool isOffScreen() const;
 
-    const SDL_Rect& getRect() const { return rect_; }  // <-- return reference
+    const SDL_Rect& getRect() const { return rect_; }  // hitbox init
 
 private:
     SDL_Renderer* renderer_;

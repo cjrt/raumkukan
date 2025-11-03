@@ -15,6 +15,6 @@ public:
     void playGunSound();
 
 private:
-    Mix_Music* bgMusic = nullptr; // sick beats
+    Mix_Music* bgMusic = nullptr;
     Mix_Chunk* gunSound = nullptr;
 };

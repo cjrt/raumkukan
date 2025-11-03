@@ -1,125 +1,154 @@
+/**
+ * @file main.cpp
+ * @brief Main entry point for Raumkūkan game
+ * 
+ * This file initializes SDL, creates the game window, and runs the main game loop.
+ * The actual game logic is handled by the Game class.
+ */
+
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #include <iostream>
-#include <vector>
-#include <cstdlib>
-#include <ctime>
+#include "../headers/SDLManager.h"
+#include "../headers/Game.h"
 #include "../headers/AnimatedBackground.h"
-#include "../headers/Player.h"
-#include "../headers/Asteroid.h"
-#include "../headers/Bullet.h"
+#include "../headers/StartScreen.h"
 #include "../headers/Sound.h"
+#include "../headers/GameConstants.h"
 
-const int SCREEN_WIDTH = 1920;
-const int SCREEN_HEIGHT = 1080;
-
+/**
+ * @brief Main function - entry point of the program
+ * @param argc Number of command line arguments
+ * @param argv Array of command line arguments
+ * @return Exit code (0 for success, non-zero for error)
+ */
 int main(int argc, char* argv[]) {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0 || IMG_Init(IMG_INIT_PNG) == 0) {
-        std::cerr << "SDL/IMG could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
+    // Initialize SDL subsystems
+    if (!SDLManager::initialize()) {
+        std::cerr << "Failed to initialize SDL!" << std::endl;
         return 1;
     }
 
+    // Initialize sound system
     Sounds sounds;
     if (!sounds.init()) {
-        std::cerr << "Failed to initialize SDL_mixer!" << std::endl;
+        std::cerr << "Failed to initialize sound system!" << std::endl;
+        SDLManager::cleanup();
         return 1;
     }
 
-    if (!sounds.loadMusic("assets/backgroundmusic.mp3"))
+    // Load audio assets
+    if (!sounds.loadMusic(GameConstants::MUSIC_PATH)) {
+        SDLManager::cleanup();
         return 1;
+    }
 
-    if (!sounds.loadGunSound("assets/gunsound.mp3"))
+    if (!sounds.loadGunSound(GameConstants::GUN_SOUND_PATH)) {
+        SDLManager::cleanup();
         return 1;
+    }
 
-    sounds.playMusic(); // start background music
+    sounds.playMusic();
 
+    // Create window
     SDL_Window* window = SDL_CreateWindow("Raumkūkan",
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED,
-                                          SCREEN_WIDTH,
-                                          SCREEN_HEIGHT,
+                                          GameConstants::SCREEN_WIDTH,
+                                          GameConstants::SCREEN_HEIGHT,
                                           SDL_WINDOW_SHOWN);
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    AnimatedBackground bg(renderer, "assets/background", 9, 100);
-    Player player(renderer, "assets/player.png", SCREEN_WIDTH, SCREEN_HEIGHT, 0.20f, &sounds);
+    if (!window) {
+        std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+        SDLManager::cleanup();
+        return 1;
+    }
 
-    Uint32 lastTime = SDL_GetTicks();
+    // Create renderer
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer) {
+        std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+        SDL_DestroyWindow(window);
+        SDLManager::cleanup();
+        return 1;
+    }
+
+    // Create game objects
+    AnimatedBackground background(renderer, 
+                                  GameConstants::BACKGROUND_FOLDER_PATH,
+                                  GameConstants::BACKGROUND_FRAME_COUNT,
+                                  GameConstants::BACKGROUND_FRAME_DELAY_MS);
+    
+    StartScreen startScreen(renderer, 
+                           GameConstants::SCREEN_WIDTH, 
+                           GameConstants::SCREEN_HEIGHT);
+    
+    Game game(renderer, 
+              GameConstants::SCREEN_WIDTH,
+              GameConstants::SCREEN_HEIGHT,
+              &sounds);
+
+    // Main game loop variables
+    Uint32 lastFrameTime = SDL_GetTicks();
     bool running = true;
     SDL_Event event;
 
-    std::vector<Bullet*> bullets;
-    std::vector<Asteroid*> asteroids;
-
-    srand(static_cast<unsigned>(time(nullptr)));
-    float spawnTimer = 0.0f;
-    float spawnInterval = 0.75f;
-
+    // Main game loop
     while (running) {
-        Uint32 currentTime = SDL_GetTicks();
-        float deltaTime = (currentTime - lastTime) / 1000.0f;
-        lastTime = currentTime;
+        // Calculate delta time
+        Uint32 currentFrameTime = SDL_GetTicks();
+        float deltaTime = (currentFrameTime - lastFrameTime) / 1000.0f;
+        lastFrameTime = currentFrameTime;
 
+        // Handle events
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) running = false;
-            if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-                player.shoot(bullets);
+            if (event.type == SDL_QUIT) {
+                running = false;
             }
-            player.handleEvent(event);
-        }
 
-        spawnTimer += deltaTime;
-        if (spawnTimer >= spawnInterval) {
-            spawnTimer = 0.0f;
-            asteroids.push_back(new Asteroid(renderer, "assets/asteroid.png",
-                                             SCREEN_WIDTH, SCREEN_HEIGHT,
-                                             player.getX(), player.getY()));
-        }
-
-        bg.update();
-        player.update(deltaTime);
-
-        // update bullets
-        for (auto it = bullets.begin(); it != bullets.end();) {
-            (*it)->update(deltaTime);
-            if ((*it)->isOffScreen()) {
-                delete *it;
-                it = bullets.erase(it);
+            if (!game.isGameStarted()) {
+                // Handle start screen
+                startScreen.handleEvent(event);
+                if (startScreen.shouldStartGame()) {
+                    game.initialize();
+                }
             } else {
-                ++it;
+                // Handle game events
+                game.handleEvent(event);
             }
         }
 
-        // update asteroids
-        for (auto it = asteroids.begin(); it != asteroids.end();) {
-            (*it)->update(deltaTime, player.getX(), player.getY());
-            if ((*it)->isOffScreen()) {
-                delete *it;
-                it = asteroids.erase(it);
-            } else {
-                ++it;
+        // Update game state
+        if (game.isGameStarted()) {
+            if (!game.update(deltaTime)) {
+                // Game over
+                running = false;
             }
         }
 
-        // render everything
+        // Update background animation (always running)
+        background.update();
+
+        // Render everything
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        bg.render();
-        for (auto* a : asteroids) a->render();
-        for (auto* b : bullets) b->render();
-        player.render();
+        // Render background
+        background.render();
+
+        // Render game or start screen
+        if (!game.isGameStarted()) {
+            startScreen.render();
+        } else {
+            game.render();
+        }
 
         SDL_RenderPresent(renderer);
     }
 
-    // cleanup
-    for (auto* b : bullets) delete b;
-    for (auto* a : asteroids) delete a;
-
+    // Cleanup
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-    IMG_Quit();
-    SDL_Quit();
+    SDLManager::cleanup();
+
     return 0;
 }
