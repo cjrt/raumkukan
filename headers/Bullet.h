@@ -6,9 +6,7 @@
 
 class Bullet {
 public:
-    // constructor
     Bullet(SDL_Renderer* renderer, const std::string& path, float startX, float startY, float targetX, float targetY);
-    // destructor
     ~Bullet();
 
     void update(float deltaTime);

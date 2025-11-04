@@ -22,7 +22,6 @@ AnimatedBackground::AnimatedBackground(SDL_Renderer* renderer, const std::string
     }
 }
 
-// remove from memory if gone[I.E when game is exited]
 AnimatedBackground::~AnimatedBackground() {
     for (auto tex : frames_) {
         SDL_DestroyTexture(tex);

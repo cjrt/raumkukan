@@ -5,28 +5,16 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-/**
- * @class SDLManager
- * @brief Handles SDL initialization and cleanup
- * 
- * RAII wrapper for SDL subsystems to ensure proper initialization
- * and cleanup order.
- */
+// RAII(Resource Acquisition Is Initialization I never remeber that acronym)
+
 class SDLManager {
 public:
-    /**
-     * @brief Initialize SDL subsystems
-     * @return true if successful, false otherwise
-     */
-    static bool initialize();
 
-    /**
-     * @brief Cleanup all SDL subsystems
-     */
+    static bool initialize();
     static void cleanup();
 
 private:
-    static bool initialized_;
+    static bool initialized_; // yes? no? maybe? hotel? trivago
 };
 
-#endif // SDL_MANAGER_H
+#endif 

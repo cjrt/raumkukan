@@ -53,7 +53,6 @@ Asteroid::~Asteroid() {
 
 void Asteroid::update(float deltaTime, float playerX, float playerY) {
 
-    // update rotation
     angle_ += rotationSpeed_ * deltaTime;
 
     // keep angle between 0–360

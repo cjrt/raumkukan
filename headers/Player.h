@@ -14,8 +14,8 @@ public:
     ~Player();
     // these are set on the constructor in the cpp file
     void handleEvent(const SDL_Event& e); // Keyboard input (WASD)
-    void render();                        // Draw and rotate toward mouse
-    void update(float deltaTime);         // used to prevent frame dependent movement
+    void render();                       
+    void update(float deltaTime);      
 
     SDL_Rect getHitbox() const;
 

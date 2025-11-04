@@ -5,7 +5,6 @@ UIRenderer::UIRenderer(SDL_Renderer* renderer, const std::string& fontPath,
                        int normalFontSize, int largeFontSize)
     : renderer_(renderer), normalFont_(nullptr), largeFont_(nullptr), initialized_(false) {
     
-    // Load fonts
     normalFont_ = TTF_OpenFont(fontPath.c_str(), normalFontSize);
     if (!normalFont_) {
         std::cerr << "Failed to load normal font: " << TTF_GetError() << std::endl;
@@ -46,14 +45,14 @@ void UIRenderer::renderTextCentered(const std::string& text, int centerX, int ce
 
     TTF_Font* font = (fontSize == 0) ? normalFont_ : largeFont_;
     
-    // Create surface to measure text dimensions
+    // surface to measure text dimensions
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), color);
     if (!textSurface) return;
 
     int textWidth = textSurface->w;
     int textHeight = textSurface->h;
     
-    // Calculate position to center the text
+    // center the text
     int x = centerX - (textWidth / 2);
     int y = centerY - (textHeight / 2);
     

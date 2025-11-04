@@ -8,7 +8,6 @@
 
 class AnimatedBackground {
 public:
-    // constructor/destructor declaration
     AnimatedBackground(SDL_Renderer* renderer, const std::string& folder, int frameCount, int frameDelayMs);
     ~AnimatedBackground();
 

@@ -31,7 +31,6 @@ void RoundManager::updateTransitionTimer(float deltaTime) {
 }
 
 bool RoundManager::shouldSpawnAsteroids(float deltaTime) {
-    // Don't spawn during transition or if quota is met
     if (showingRoundTransition_ || 
         asteroidsSpawnedThisRound_ >= asteroidsToSpawnThisRound_) {
         return false;
@@ -51,10 +50,8 @@ void RoundManager::markAsteroidsSpawned(int count) {
 }
 
 bool RoundManager::isRoundComplete(size_t activeAsteroidCount) const {
-    // Round is complete when:
-    // 1. Not showing transition
-    // 2. Spawn quota has been met
-    // 3. All asteroids have been destroyed
+    // rounds complete if
+    // not showing transition and number of asteroids per round has been spawned and destroyed
     return !showingRoundTransition_ &&
            asteroidsSpawnedThisRound_ >= asteroidsToSpawnThisRound_ &&
            activeAsteroidCount == 0;

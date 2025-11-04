@@ -72,7 +72,7 @@ float Player::getAngleToMouse() const {
 }
 
 SDL_Rect Player::getHitbox() const {
-    int padding = 10; // scales size of hitbox optional: shrink hitbox so collisions feel fair
+    int padding = 10; // scales size of hitbox
     return SDL_Rect{
         static_cast<int>(x_) + padding,
         static_cast<int>(y_) + padding,

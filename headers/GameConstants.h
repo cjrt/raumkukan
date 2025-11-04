@@ -1,17 +1,14 @@
 #ifndef GAME_CONSTANTS_H
 #define GAME_CONSTANTS_H
 
-/**
- * @file GameConstants.h
- * @brief Centralized constants for the game
- */
+// defines games constants
 
 namespace GameConstants {
-    // Screen dimensions
+    // dimensions
     constexpr int SCREEN_WIDTH = 1920;
     constexpr int SCREEN_HEIGHT = 1080;
 
-    // Round system
+    // round variables
     constexpr int INITIAL_ASTEROIDS_PER_ROUND = 10;
     constexpr int ASTEROIDS_INCREMENT_PER_ROUND = 5;
     constexpr float INITIAL_SPAWN_INTERVAL = 0.75f;
@@ -20,12 +17,12 @@ namespace GameConstants {
     constexpr float ROUND_TRANSITION_DURATION = 2.0f;
     constexpr int ASTEROIDS_PER_SPAWN_EVENT = 2;
 
-    // Font paths and sizes
+    // font paths and variables
     constexpr const char* FONT_PATH = "assets/menufont.ttf";
     constexpr int ROUND_DISPLAY_FONT_SIZE = 36;
     constexpr int ROUND_TRANSITION_FONT_SIZE = 72;
 
-    // Asset paths
+    // asset paths
     constexpr const char* PLAYER_TEXTURE_PATH = "assets/player.png";
     constexpr const char* ASTEROID_TEXTURE_PATH = "assets/asteroid.png";
     constexpr const char* ASTEROID2_TEXTURE_PATH = "assets/asteroid2.png";
@@ -33,7 +30,7 @@ namespace GameConstants {
     constexpr const char* MUSIC_PATH = "assets/backgroundmusic.mp3";
     constexpr const char* GUN_SOUND_PATH = "assets/gunsound.mp3";
 
-    // Game settings
+    // settings
     constexpr float PLAYER_SCALE = 0.20f;
     constexpr int BACKGROUND_FRAME_COUNT = 9;
     constexpr int BACKGROUND_FRAME_DELAY_MS = 100;
@@ -43,4 +40,4 @@ namespace GameConstants {
     constexpr int ROUND_TEXT_Y_OFFSET = 20;
 }
 
-#endif // GAME_CONSTANTS_H
+#endif
