@@ -2,7 +2,7 @@
 
 A simple game inspired by the classic arcade game "Asteroids"
 
-The game is quite barebones, I may return in the future to add more features for the time being I'm more interested in other things.
+The game is quite barebones, I may return in the future to add more features.
 
 ## Building
 
